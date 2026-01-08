@@ -1,15 +1,16 @@
 import os
+from dotenv import load_dotenv
 import requests
 from datetime import datetime
 
 endpoint = "https://app.100daysofpython.dev"
 exercise_input = input("Tell me which exercise you did: ")
 sheet_endpoint = 'https://api.sheety.co/6fee232c9a12d653b244a91195e6ad98/workout/workouts'
-
+load_dotenv()
 
 headers = {
-    "x-app-id": os.environ["app_id"],
-    "x-app-key": os.environ["app_key"],
+    "x-app-id": os.getenv("APP_ID"),
+    "x-app-key": os.getenv("APP_KEY"),
 }
 
 params = {
@@ -17,7 +18,7 @@ params = {
 }
 
 sheet_header = {
-    "Authorization: Basic emVsdGk6NDkya2ZqYXVzaGdGSg==",
+    "Authorization": os.getenv("AUTHORIZATION"),
 }
 
 today = datetime.now()
@@ -30,6 +31,7 @@ health_endpoint = f"{endpoint}/healthz"
 request1 = requests.get(url=health_endpoint)
 
 data = request.json()["exercises"][0]
+print(data)
 exercise_name = data["name"]
 print(data)
 duration = data["duration_min"]
@@ -45,9 +47,11 @@ parameters = {
         "calories": calories,
     }
 }
-
+print(type(os.getenv("SHEET_USER")))
+print(os.getenv("SHEET_PASS"))
+print(os.getenv("AUTHORIZATION"))
 requests.get(url=sheet_endpoint)
-responses = requests.post(url=sheet_endpoint, json=parameters, auth=(os.environ["username"], os.environ["password"]))
+responses = requests.post(url=sheet_endpoint, json=parameters, headers=sheet_header, auth=(os.getenv("SHEET_USER"), os.getenv("SHEET_PASS")))
 responses.raise_for_status()
 # body = {
 #     "workout": {
